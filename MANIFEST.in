@@ -1,9 +1,0 @@
-recursive-include pki *
-recursive-include wsgi *
-recursive-include gentoo *
-recursive-include docs *
-include AUTHORS
-include COPYING
-include LICENSE
-include README.markdown
-include CHANGELOG

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Tasks SYSTEM "Tasks-5.1.dtd">
+<!-- eric6 tasks file for project django_pki -->
+<!-- Saved: 2015-07-08, 11:52:10 -->
+<Tasks version="5.1">
+  <ProjectScanFilter></ProjectScanFilter>
+  <Task priority="1" completed="False" type="1">
+    <Summary>TODO: syslog, handlers and formatters)</Summary>
+    <Description></Description>
+    <Created>2015-07-08, 11:38:49</Created>
+    <Resource>
+      <Filename>project/pki/settings.py</Filename>
+      <Linenumber>36</Linenumber>
+    </Resource>
+  </Task>
+  <Task priority="1" completed="False" type="2">
+    <Summary>WARNING: keep the secret key used in production secret!</Summary>
+    <Description></Description>
+    <Created>2015-07-08, 11:52:07</Created>
+    <Resource>
+      <Filename>project/settings.py</Filename>
+      <Linenumber>12</Linenumber>
+    </Resource>
+  </Task>
+  <Task priority="1" completed="False" type="2">
+    <Summary>WARNING: don't run with debug turned on in production!</Summary>
+    <Description></Description>
+    <Created>2015-07-08, 11:52:07</Created>
+    <Resource>
+      <Filename>project/settings.py</Filename>
+      <Linenumber>15</Linenumber>
+    </Resource>
+  </Task>
+</Tasks>

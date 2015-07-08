@@ -1,0 +1,41 @@
+{% extends 'site_base.html' %}
+{% load i18n %}
+{% block head_title %}PKI Server{% endblock %}
+{% block body %}
+    <h2>{% trans 'Public CA certificates' %}:</h2>
+    <div class="row">
+            <div class="col-md-6">{% trans 'Name of certificate' %} </div>
+            <div class="col-md-2">{% trans 'File .crt' %}</div>
+            <div class="col-md-2">{% trans 'List of revoked' %}</div>
+            <div class="col-md-2">{% trans 'All files in zip' %}</div>
+    </div>
+    {% for cert in certs %}
+        <div class="row">
+            <div class="col-md-6">{{ cert.name }} </div>
+            <div class="col-md-2">
+                {{ cert.download_link_crt|safe }}
+            </div>
+            <div class="col-md-2">
+                {{ cert.download_link_crl|safe }}
+            </div>
+            <div class="col-md-2">
+                {{ cert.download_link_zip|safe}}
+            </div>
+        </div>
+    {% endfor %}
+    <h2>{% trans 'Your personal certificates' %}:</h2>
+    {% for cert in personal_certs %}
+        <div class="row">
+            <div class="col-md-6">{{ cert.name }} </div>
+            <div class="col-md-2">
+                {{ cert.download_link_crt|safe }}
+            </div>
+            <div class="col-md-2">
+                {{ cert.download_link_crl|safe }}
+            </div>
+            <div class="col-md-2">
+                {{ cert.download_link_zip|safe}}
+            </div>
+        </div>
+    {% endfor %}
+{% endblock %}

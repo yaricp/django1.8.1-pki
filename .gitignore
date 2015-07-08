@@ -5,3 +5,8 @@ dist/
 build/
 MANIFEST
 docs/_build/
+venv/
+*.pem
+*.lst
+*.log
+*.sqlite3

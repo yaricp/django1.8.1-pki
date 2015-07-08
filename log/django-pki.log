@@ -1,0 +1,126 @@
+2015-05-20 11:52:21,449 ERROR - openssl.refresh_pki_metadata > Refreshing PKI metadata failed: [Errno 2] No such file or directory: '/ssl/openssl.cnf'
+Traceback (most recent call last):
+  File "/home/yaric/projects/pki/project/pki/openssl.py", line 120, in refresh_pki_metadata
+    f = open(PKI_OPENSSL_CONF, 'wb')
+IOError: [Errno 2] No such file or directory: '/ssl/openssl.cnf'
+2015-05-20 11:54:27,384 ERROR - openssl.refresh_pki_metadata > Refreshing PKI metadata failed: [Errno 2] No such file or directory: '/ssl/openssl.cnf'
+Traceback (most recent call last):
+  File "/home/yaric/projects/pki/project/pki/openssl.py", line 120, in refresh_pki_metadata
+    f = open(PKI_OPENSSL_CONF, 'wb')
+IOError: [Errno 2] No such file or directory: '/ssl/openssl.cnf'
+2015-05-20 11:55:54,919 ERROR - openssl.refresh_pki_metadata > Refreshing PKI metadata failed: [Errno 2] No such file or directory: '/ssl/openssl.cnf'
+Traceback (most recent call last):
+  File "/home/yaric/projects/pki/project/pki/openssl.py", line 120, in refresh_pki_metadata
+    f = open(PKI_OPENSSL_CONF, 'wb')
+IOError: [Errno 2] No such file or directory: '/ssl/openssl.cnf'
+2015-05-20 12:59:39,277 ERROR - views.pki_download_crt > File not found: <built-in function zip>
+2015-05-20 13:00:30,310 ERROR - views.pki_download_crt > File not found: <built-in function zip>
+2015-05-20 13:00:43,532 ERROR - views.pki_download_crt > File not found: <built-in function zip>
+2015-05-20 13:01:35,224 ERROR - views.pki_download_crt > File not found: <built-in function zip>
+2015-05-20 13:02:51,095 ERROR - views.pki_download_crt > File not found: /home/yaric/projects/pki/var/pki/ssl_store/servers.isp.nsc.ru/cert/servers.isp.nsc.ru.cert.pem
+2015-05-20 16:50:37,591 ERROR - openssl.exec_openssl > openssl command "req" failed with returncode 1
+2015-05-20 16:50:37,591 ERROR - openssl.exec_openssl > Using configuration from /home/yaric/projects/pki/ssl/openssl.cnf
+Error opening Private Key /home/yaric/projects/pki/var/pki/ssl_store/isp.nsc.ru/private/isp.nsc.ru.key.pem
+139999298442912:error:02001002:system library:fopen:No such file or directory:bss_file.c:398:fopen('/home/yaric/projects/pki/var/pki/ssl_store/isp.nsc.ru/private/isp.nsc.ru.key.pem','r')
+139999298442912:error:20074002:BIO routines:FILE_CTRL:system lib:bss_file.c:400:
+unable to load Private Key
+
+2015-05-22 13:32:34,275 ERROR - openssl.exec_openssl > openssl command "ca" failed with returncode 1
+2015-05-22 13:32:34,294 ERROR - openssl.exec_openssl > Using configuration from /home/yaric/projects/pki/ssl/openssl.cnf
+Check that the request matches the signature
+Signature ok
+Certificate Details:
+        Serial Number: 4 (0x4)
+        Validity
+            Not Before: May 22 07:32:34 2015 GMT
+            Not After : May 20 07:32:34 2020 GMT
+        Subject:
+            commonName                = test
+            countryName               = RU
+            stateOrProvinceName       = Novosibirsk st.
+            localityName              = Novosibirsk
+            organizationName          = LAN
+            organizationalUnitName    = LAN
+            emailAddress              = support@isp.nsc.ru
+        X509v3 extensions:
+            X509v3 Basic Constraints: critical
+                CA:FALSE
+            X509v3 Key Usage: critical
+                Digital Signature, Non Repudiation, Key Encipherment
+            X509v3 Subject Key Identifier: 
+                21:AC:29:55:14:81:9F:73:4E:AE:59:4C:B6:6F:FC:04:4C:77:F1:13
+            X509v3 Authority Key Identifier: 
+                keyid:60:ED:55:A5:BF:8B:D6:40:A4:A3:AB:7C:C6:3E:D7:EC:C3:E5:61:FA
+                DirName:/CN=ISP.NSC.RU/C=RU/ST=Novosibirsk st/L=Novosibirsk/O=ISP SBRAS/OU=LAN/emailAddress=support@isp.nsc.ru
+                serial:02
+
+            X509v3 Extended Key Usage: critical
+                TLS Web Server Authentication
+            X509v3 Subject Alternative Name: 
+                email:support@isp.nsc.ru
+Certificate is to be certified until May 20 07:32:34 2020 GMT (1825 days)
+failed to update database
+TXT_DB error number 2
+
+2015-06-09 14:16:31,931 ERROR - views.pki_download > File not found: /home/yaric/projects/pki/var/pki/ssl_store/servers1.isp.nsc.ru/certs/servers1.isp.nsc.ru.p12.pem
+2015-06-09 14:16:35,119 ERROR - views.pki_download > File not found: /home/yaric/projects/pki/var/pki/ssl_store/servers1.isp.nsc.ru/certs/servers1.isp.nsc.ru.p12.pem
+2015-06-09 14:16:38,363 ERROR - views.pki_download > File not found: /home/yaric/projects/pki/var/pki/ssl_store/servers1.isp.nsc.ru/certs/servers1.isp.nsc.ru.p12.pem
+2015-06-09 14:31:00,642 ERROR - views.pki_download > File not found: /home/yaric/projects/pki/var/pki/ssl_store/servers1.isp.nsc.ru/certs/servers1.isp.nsc.ru.p12.pem
+2015-06-09 14:31:17,837 ERROR - views.pki_download > File not found: /home/yaric/projects/pki/var/pki/ssl_store/servers1.isp.nsc.ru/certs/servers1.isp.nsc.ru.p12.pem
+2015-06-09 14:32:46,684 ERROR - views.pki_download > File not found: /home/yaric/projects/pki/var/pki/ssl_store/servers1.isp.nsc.ru/certs/servers1.isp.nsc.ru.p12.pem
+2015-06-09 14:44:47,117 ERROR - views.pki_download > File not found: /home/yaric/projects/pki/var/pki/ssl_store/servers1.isp.nsc.ru/certs/servers1.isp.nsc.ru.p12.pem
+2015-06-09 14:45:46,086 ERROR - views.pki_download > File not found: /home/yaric/projects/pki/var/pki/ssl_store/servers1.isp.nsc.ru/certs/servers1.isp.nsc.ru.p12.pem
+2015-06-09 15:04:32,002 ERROR - views.pki_download > File not found: /home/yaric/projects/pki/var/pki/ssl_store/servers1.isp.nsc.ru/certs/servers1.isp.nsc.ru.p12.
+2015-06-09 15:04:38,115 ERROR - views.pki_download > File not found: /home/yaric/projects/pki/var/pki/ssl_store/servers1.isp.nsc.ru/certs/servers1.isp.nsc.ru.p12.
+2015-06-09 15:05:44,671 ERROR - views.pki_download > File not found: /home/yaric/projects/pki/var/pki/ssl_store/servers1.isp.nsc.ru/certs/servers1.isp.nsc.ru.p12.
+2015-06-09 15:06:10,131 ERROR - views.pki_download > File not found: /home/yaric/projects/pki/var/pki/ssl_store/servers1.isp.nsc.ru/certs/servers1.isp.nsc.ru.p12
+2015-06-09 15:07:42,465 ERROR - views.pki_download > File not found: /home/yaric/projects/pki/var/pki/ssl_store/servers1.isp.nsc.ru/certs/servers1.isp.nsc.ru.p12
+2015-06-09 15:11:14,697 ERROR - views.pki_download > File not found: /home/yaric/projects/pki/var/pki/ssl_store/servers1.isp.nsc.ru/certs/servers1.isp.nsc.ru.p12
+2015-06-09 15:11:27,486 ERROR - views.pki_download > File not found: /home/yaric/projects/pki/var/pki/ssl_store/servers1.isp.nsc.ru/certs/servers1.isp.nsc.ru.p12
+2015-06-09 15:11:30,462 ERROR - views.pki_download > File not found: /home/yaric/projects/pki/var/pki/ssl_store/servers1.isp.nsc.ru/certs/servers1.isp.nsc.ru.p12
+2015-06-09 15:11:34,209 ERROR - views.pki_download > File not found: /home/yaric/projects/pki/var/pki/ssl_store/servers1.isp.nsc.ru/certs/servers1.isp.nsc.ru.p12
+2015-06-09 15:34:16,450 ERROR - views.pki_download > File not found: /home/yaric/projects/pki/var/pki/ssl_store/servers1.isp.nsc.ru/certs/pki1.mn.isp.nsc.ru.p12
+2015-06-09 15:34:22,016 ERROR - views.pki_download > File not found: /home/yaric/projects/pki/var/pki/ssl_store/servers1.isp.nsc.ru/certs/hg1.mnisp.nsc.ru.p12
+2015-06-09 15:34:24,976 ERROR - views.pki_download > File not found: /home/yaric/projects/pki/var/pki/ssl_store/servers1.isp.nsc.ru/certs/test.p12
+2015-06-09 15:37:30,244 ERROR - views.pki_download > File not found: /home/yaric/projects/pki/var/pki/ssl_store/servers1.isp.nsc.ru/certs/pki1.mn.isp.nsc.ru.p12
+2015-06-09 15:37:58,620 ERROR - views.pki_download > File not found: /home/yaric/projects/pki/var/pki/ssl_store/servers1.isp.nsc.ru/certs/pki1.mn.isp.nsc.ru.p12
+2015-06-09 15:44:38,116 ERROR - views.pki_download > File not found: /home/yaric/projects/pki/var/pki/ssl_store/servers1.isp.nsc.ru/certs/pki1.mn.isp.nsc.ru.p12
+2015-06-09 15:48:15,282 ERROR - views.pki_download > File not found: /home/yaric/projects/pki/var/pki/ssl_store/servers1.isp.nsc.ru/certs/pki1.mn.isp.nsc.ru.cert.p12.pem
+2015-07-07 12:40:06,307 ERROR - openssl.exec_openssl > openssl command "genrsa" failed with returncode 1
+2015-07-07 12:40:06,328 ERROR - openssl.exec_openssl > usage: genrsa [args] [numbits]
+ -des            encrypt the generated key with DES in cbc mode
+ -des3           encrypt the generated key with DES in ede cbc mode (168 bit key)
+ -seed
+                 encrypt PEM output with cbc seed
+ -aes128, -aes192, -aes256
+                 encrypt PEM output with cbc aes
+ -camellia128, -camellia192, -camellia256
+                 encrypt PEM output with cbc camellia
+ -out file       output the key to 'file
+ -passout arg    output file pass phrase source
+ -f4             use F4 (0x10001) for the E value
+ -3              use 3 for the E value
+ -engine e       use engine e, possibly a hardware device.
+ -rand file:file:...
+                 load the file (or the files in the directory) into
+                 the random number generator
+
+2015-07-07 12:42:00,861 ERROR - openssl.exec_openssl > openssl command "genrsa" failed with returncode 1
+2015-07-07 12:42:00,861 ERROR - openssl.exec_openssl > usage: genrsa [args] [numbits]
+ -des            encrypt the generated key with DES in cbc mode
+ -des3           encrypt the generated key with DES in ede cbc mode (168 bit key)
+ -seed
+                 encrypt PEM output with cbc seed
+ -aes128, -aes192, -aes256
+                 encrypt PEM output with cbc aes
+ -camellia128, -camellia192, -camellia256
+                 encrypt PEM output with cbc camellia
+ -out file       output the key to 'file
+ -passout arg    output file pass phrase source
+ -f4             use F4 (0x10001) for the E value
+ -3              use 3 for the E value
+ -engine e       use engine e, possibly a hardware device.
+ -rand file:file:...
+                 load the file (or the files in the directory) into
+                 the random number generator
+
