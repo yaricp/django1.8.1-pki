@@ -23,3 +23,11 @@ or use UWSGI
 
 ## Settings
 
+The main settings of project is in settings.py in root directory. 
+
+For example if you want have authorization through LDAP server you need use variables with AUTH_LDAP_ prefix
+
+For default settings of your certificates use variables with PKI_ prefix
+
+Main settings of certificates is in /etc/ssl.conf or /usr/local/etc/ssl.conf depends of your system.
+
