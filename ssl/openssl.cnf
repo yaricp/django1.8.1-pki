@@ -35,69 +35,6 @@ preserve                 = no
 policy                   = policy_match
 
 
-## Main root certificate
-[ isp.nsc.ru ]
-dir                      = $HOME/isp.nsc.ru
-certs                    = $dir/certs
-new_certs_dir            = $certs
-database                 = $dir/index.txt
-certificate              = $certs/isp.nsc.ru.cert.pem
-private_key              = $dir/private/isp.nsc.ru.key.pem
-serial                   = $dir/serial
-crldir                   = $dir/crl
-crlnumber                = $dir/crlnumber
-crl                      = $crldir/isp.nsc.ru.crl.pem
-RANDFILE                 = $dir/private/.rnd
-x509_extensions          = v3_root_or_intermediate_ca
-copy_extensions          = copy
-name_opt                 = ca_default
-cert_opt                 = ca_default
-default_md               = sha512
-preserve                 = no
-policy                   = policy_anything
-
-## certificat for servers
-[ servers.isp.nsc.ru ]
-dir                      = $HOME/servers.isp.nsc.ru
-certs                    = $dir/certs
-new_certs_dir            = $certs
-database                 = $dir/index.txt
-certificate              = $certs/servers.isp.nsc.ru.cert.pem
-private_key              = $dir/private/servers.isp.nsc.ru.key.pem
-serial                   = $dir/serial
-crldir                   = $dir/crl
-crlnumber                = $dir/crlnumber
-crl                      = $crldir/servers.isp.nsc.ru.crl.pem
-RANDFILE                 = $dir/private/.rnd
-x509_extensions          = v3_edge_ca
-copy_extensions          = copy
-name_opt                 = ca_default
-cert_opt                 = ca_default
-default_md               = sha512
-preserve                 = no
-policy                   = policy_anything
-
-## new CA for servers.isp.nsc.ru
-[ servers1.isp.nsc.ru ]
-dir                      = $HOME/servers1.isp.nsc.ru
-certs                    = $dir/certs
-new_certs_dir            = $certs
-database                 = $dir/index.txt
-certificate              = $certs/servers1.isp.nsc.ru.cert.pem
-private_key              = $dir/private/servers1.isp.nsc.ru.key.pem
-serial                   = $dir/serial
-crldir                   = $dir/crl
-crlnumber                = $dir/crlnumber
-crl                      = $crldir/servers1.isp.nsc.ru.crl.pem
-RANDFILE                 = $dir/private/.rnd
-x509_extensions          = v3_edge_ca
-copy_extensions          = copy
-name_opt                 = ca_default
-cert_opt                 = ca_default
-default_md               = sha512
-preserve                 = no
-policy                   = policy_anything
-
 
 ###############################################################
 ## Policy definitions

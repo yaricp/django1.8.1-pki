@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Project SYSTEM "Project-5.1.dtd">
 <!-- eric project file for project django_pki -->
-<!-- Saved: 2015-07-08, 13:39:22 -->
+<!-- Saved: 2015-07-08, 14:31:25 -->
 <!-- Copyright (C) 2015 yaricp, yaricp@gmail.com -->
 <Project version="5.1">
   <Language>en_US</Language>
@@ -67,9 +67,9 @@
     <Other>project/templates/index.html</Other>
     <Other>project/templates/site_base.html</Other>
     <Other>project/templates/error_auth.html</Other>
-    <Other>.hgignore</Other>
     <Other>project/pki/fixtures/eku_and_ku.json</Other>
     <Other>readme.md</Other>
+    <Other>log/django-pki.log</Other>
   </Others>
   <MainScript>project/settings.py</MainScript>
   <Vcs>
