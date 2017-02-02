@@ -15,10 +15,10 @@ ecdsa==0.13
 paramiko==1.15.2
 pinax-theme-bootstrap==5.7.3
 pycrypto==2.6.1
-pygraphviz==1.2
+pygraphviz
 pytz==2015.2
 raven==5.3.1
 six==1.9.0
 sqlparse==0.1.15
-uWSGI==2.0.10
+uWSGI
 wsgiref==0.1.2
