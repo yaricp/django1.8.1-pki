@@ -1,4 +1,4 @@
-Django==1.8.1
+Django>=1.11.28
 Django-Accounts==0.1
 Fabric==1.10.1
 antiorm==1.1.1
