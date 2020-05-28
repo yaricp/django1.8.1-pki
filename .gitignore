@@ -6,9 +6,12 @@ build/
 MANIFEST
 docs/_build/
 venv/
+venv3/
+venv*
 *.pem
 *.lst
 *.log
 *.sqlite3
 .idea/
 .eric*
+pki/PKI

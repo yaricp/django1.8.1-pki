@@ -1,0 +1,12 @@
+{% extends "admin/app_index.html" %}
+{% block sidebar %}
+<div>
+    <form action="{% url 'admin:refresh_metadata' %}" method="POST">
+        {% csrf_token %}
+        <button type="submit" class="button">Refresh Metadata</button>
+    </form>
+</div>
+
+
+{% endblock %}
+
