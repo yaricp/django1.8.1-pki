@@ -10,3 +10,5 @@ venv/
 *.lst
 *.log
 *.sqlite3
+.idea/
+.eric*
