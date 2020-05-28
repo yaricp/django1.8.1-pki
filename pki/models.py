@@ -167,11 +167,9 @@ class CertificateBase(models.Model):
             return ""
         
         if self.active is True:
-            return get_pki_icon_html('icon-yes.gif', "Certificate is valid", css="") + \
-                                                    " <strong>/ valid</strong>"
+            return get_pki_icon_html('icon-yes.gif', "Certificate is valid", css="")
         else:
-            return get_pki_icon_html('icon-no.gif', "Certificate is revoked", css="") + \
-                                                        " <strong>/ revoked</strong>"
+            return get_pki_icon_html('icon-no.gif', "Certificate is revoked", css="")
     
     State.allow_tags = True
     State.short_description = 'State'
@@ -490,7 +488,7 @@ class CertificateBase(models.Model):
     
     def CA_Clock(self):
         """"""
-        return  format_html('<div id="clock_container"><img src="%spki/img/clock-frame.png" style="margin-right:5px"/>'\
+        return  format_html('<div id="clock_container"><img src="%s/img/clock-frame.png" style="margin-right:5px"/>'\
                '<span id="clock"></span></div>' % STATIC_URL)
     
     CA_Clock.allow_tags = True

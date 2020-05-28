@@ -28,7 +28,7 @@ def get_pki_icon_html(img, title="", css="centered", id=""):
         else:
             css_class = ''
         
-        img_path = os.path.join(STATIC_URL, 'pki/img', img)
+        img_path = os.path.join(STATIC_URL, 'img', img)
         return format_html('<img id="%s" %s src="%s" alt="%s" title="%s"/>' % (id, css_class, img_path, title, title))
 
 
