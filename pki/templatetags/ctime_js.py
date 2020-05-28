@@ -1,8 +1,10 @@
-from django import template
 import time
+
+from django import template
 
 register = template.Library()
 
+
 @register.simple_tag
 def ctime_js():
-    return time.time()*1000
+    return time.time() * 1000
