@@ -1,10 +1,8 @@
 import datetime
-import os
 import re
 from hashlib import md5 as md5_constructor
 from logging import getLogger
 
-from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 from django.core.validators import MinLengthValidator, MinValueValidator, RegexValidator, URLValidator
@@ -414,7 +412,6 @@ class CertificateBase(models.Model):
 
     def desc(self):
         """Limit description for changelist.
-        
         Limit description to 30 characters to make changelist stay on one line per item.
         At least in most cases.
         """
@@ -446,7 +443,6 @@ class CertificateBase(models.Model):
 
     def expiry_date_show(self):
         """Return expiry date with days left.
-        
         Return color marked expiry date based on days left.
         < 0 : EXPIRED text and red font color
         < 30: Orange color
@@ -462,7 +458,7 @@ class CertificateBase(models.Model):
             return format_html('<span class="revoked">%s (%sd)</span>' % (self.expiry_date, diff.days))
 
         if diff.days < 30 and diff.days >= 0:
-            span_class = ""
+            # span_class = ""
             return format_html('<span class="almost_expired">%s (%sd)</span>' % (self.expiry_date, diff.days))
         elif diff.days < 0:
             return format_html('<span class="expired">%s (EXPIRED)</span>' % self.expiry_date)
@@ -482,7 +478,6 @@ class CertificateBase(models.Model):
 
     def chain_link(self):
         """Display chain link.
-        
         If PKI_ENABLE_GRAPHVIZ is True a colored chain link is displayed. Otherwise
         a b/w chain icon without link is displayed.
         """
@@ -503,7 +498,6 @@ class CertificateBase(models.Model):
 
     def email_link(self):
         """Display email link based on status.
-        
         If PKI_ENABLE_EMAIL or certificate isn't active a disabled (b/w) icon is displayed.
         If no email address is set in the certificate a icon with exclamation mark is displayed.
         Otherwise the normal icon is returned.
@@ -540,7 +534,6 @@ class CertificateBase(models.Model):
 
     def download_link_zip(self):
         """Return a download icon.
-        
         Based on object status => clickable icon or just a b/w image
         """
 
@@ -568,7 +561,6 @@ class CertificateBase(models.Model):
 
     def download_link_crt(self):
         """Return a download icon.
-        
         Based on object status => clickable icon or just a b/w image
         """
 
@@ -596,7 +588,6 @@ class CertificateBase(models.Model):
 
     def download_link_p12(self):
         """Return a download icon.
-        
         Based on object status => clickable icon or just a b/w image
         """
 
@@ -624,7 +615,6 @@ class CertificateBase(models.Model):
 
     def download_link_crl(self):
         """Return a download icon.
-        
         Based on object status => clickable icon or just a b/w image
         """
 
@@ -654,7 +644,6 @@ class CertificateBase(models.Model):
 
     def parent_link(self):
         """Return parent name.
-        
         Returns parent's name when parent != None or self-signed
         """
 
@@ -686,7 +675,7 @@ class CertificateBase(models.Model):
     certificate_dump.short_description = "Certificate dump"
 
     def ca_clock(self):
-        """"""
+        """ CA Clock"""
         return format_html(
             '<div id="clock_container"><img src="%s/img/clock-frame.png" style="margin-right:5px"/>'
             '<span id="clock"></span></div>' % STATIC_URL
@@ -695,7 +684,7 @@ class CertificateBase(models.Model):
     ca_clock.allow_tags = True
     ca_clock.short_description = "CA clock"
 
-    def Update_Changelog(self, obj, user, action, changes):
+    def update_changelog(self, obj, user, action, changes):
         """Update changelog for given object"""
 
         PkiChangelog(
@@ -706,7 +695,7 @@ class CertificateBase(models.Model):
             changes="; ".join(changes),
         ).save()
 
-    def Delete_Changelog(self, obj):
+    def delete_changelog(self, obj):
         """Delete changelogs for a given object"""
 
         PkiChangelog.objects.filter(model_id=ContentType.objects.get_for_model(obj).pk, object_id=obj.pk).delete()
@@ -758,9 +747,9 @@ class CertificateAuthority(CertificateBase):
     def save(self, *args, **kwargs):
         """Save the CertificateAuthority object"""
 
-        ## Set user to None if it's missing
+        # Set user to None if it's missing
         c_user = getattr(self, "user", None)
-        ## Variables to track changes
+        # Variables to track changes
         c_action = self.action
         c_list = []
 
@@ -791,7 +780,7 @@ class CertificateAuthority(CertificateBase):
 
                         self.rebuild_ca_metadata(modify=True, task="replace")
 
-                        if self.parent == None:
+                        if not self.parent:
                             action.generate_self_signed_cert()
                             action.generate_crl(self.name, self.passphrase)
                         else:
@@ -806,7 +795,7 @@ class CertificateAuthority(CertificateBase):
                         prev.expiry_date = datetime.datetime.now() + delta
 
                         if prev.valid_days != self.valid_days:
-                            c_list.append("Changed valid days to %d" % (prev.valid_days, self.valid_days))
+                            c_list.append("Changed valid days from %d to %d" % (prev.valid_days, self.valid_days))
 
                         prev.valid_days = self.valid_days
                         prev.active = True
@@ -924,11 +913,11 @@ class CertificateAuthority(CertificateBase):
 
             p = self.parent
 
-            if self.parent == None:
+            if not self.parent:
                 chain.append("self-signed")
             else:
                 chain.append(self.common_name)
-                while p != None:
+                while p:
                     chain.append(p.common_name)
                     p = p.parent
 
@@ -1108,7 +1097,6 @@ class Certificate(CertificateBase):
 
     def download_link_ovpn(self):
         """Return a download icon.
-
         Based on object status => clickable icon or just a b/w image
         """
 
@@ -1149,11 +1137,11 @@ class Certificate(CertificateBase):
                     if not self.parent:
                         raise Exception("You cannot revoke a self-signed certificate! No parent => No revoke")
 
-                    ## Revoke and generate CRL
+                    # Revoke and generate CRL
                     action.revoke_certificate(self.parent_passphrase)
                     action.generate_crl(self.parent.name, self.parent_passphrase)
 
-                    ## Modify fields
+                    # Modify fields
                     prev.active = False
                     prev.der_encoded = False
                     prev.pkcs12_encoded = False
@@ -1168,7 +1156,7 @@ class Certificate(CertificateBase):
                         action.generate_crl(self.parent.name, self.parent_passphrase)
 
                     # Renew certificate and update CRL
-                    if self.parent == None:
+                    if not self.parent:
                         action.generate_self_signed_cert()
                     else:
                         action.generate_csr()
@@ -1181,7 +1169,7 @@ class Certificate(CertificateBase):
                     prev.expiry_date = datetime.datetime.now() + delta
 
                     if prev.valid_days != self.valid_days:
-                        c_list.append("Changed valid days to %d" % (prev.valid_days, self.valid_days))
+                        c_list.append("Changed valid days from %d to %d" % (prev.valid_days, self.valid_days))
 
                     prev.valid_days = self.valid_days
                     prev.active = True
@@ -1398,7 +1386,7 @@ class X509Extension(models.Model):
             super(X509Extension, self).save(*args, **kwargs)
             refresh_pki_metadata(CertificateAuthority.objects.all())
 
-    def CrlDpoint_center(self):
+    def crld_point_center(self):
         if self.crl_distribution_point:
             return get_pki_icon_html("icon-yes.gif", "CRL Distribution Point is required", id="crl_dpoint_%d" % self.pk)
         else:
@@ -1406,9 +1394,9 @@ class X509Extension(models.Model):
                 "icon-no.gif", "CRL Distribution Points are disabled ", id="crl_dpoint_%d" % self.pk
             )
 
-    CrlDpoint_center.allow_tags = True
-    CrlDpoint_center.short_description = "CRL"
-    CrlDpoint_center.admin_order_field = "crl_distribution_point"
+    crld_point_center.allow_tags = True
+    crld_point_center.short_description = "CRL"
+    crld_point_center.admin_order_field = "crl_distribution_point"
 
     def is_ca(self):
         """Return true if this is a CA extension (CA: TRUE)"""

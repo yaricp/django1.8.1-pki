@@ -1,8 +1,12 @@
+import os
+from hashlib import md5 as md5
+
 from django import forms
 from django.forms.utils import ErrorList
 from django.shortcuts import get_object_or_404
+from django.http import Http404
 
-from .models import *
+from .models import CertificateAuthority, Certificate, X509Extension
 from .settings import PKI_CA_NAME_BLACKLIST, PKI_DIR
 
 
@@ -58,7 +62,7 @@ class CertificateAuthorityForm(forms.ModelForm):
                     return cleaned_data
 
                 # Compare passphrase
-                if not pf or (ca.passphrase != md5_constructor(pf).hexdigest()):
+                if not pf or (ca.passphrase != md5(pf).hexdigest()):
                     self._errors["passphrase"] = ErrorList(
                         ['Passphrase is wrong. Enter correct passphrase for CA "%s"' % cleaned_data.get("common_name")]
                     )
@@ -66,7 +70,7 @@ class CertificateAuthorityForm(forms.ModelForm):
             if parent:
                 ca = CertificateAuthority.objects.get(name="%s" % parent.name)
                 if p_pf:
-                    enc_p_pf = md5_constructor(p_pf).hexdigest()
+                    enc_p_pf = md5(p_pf).hexdigest()
 
                 # Check if parent allows sub CA
                 if ca.is_edge_ca():
@@ -89,7 +93,7 @@ class CertificateAuthorityForm(forms.ModelForm):
         elif action == "revoke":
             if parent:
                 ca = CertificateAuthority.objects.get(name="%s" % parent.name)
-                enc_p_pf = md5_constructor(cleaned_data.get("parent_passphrase")).hexdigest()
+                enc_p_pf = md5(cleaned_data.get("parent_passphrase")).hexdigest()
 
                 # Check parent passphrase
                 if ca.passphrase != enc_p_pf:
@@ -162,7 +166,7 @@ class CertificateForm(forms.ModelForm):
             if parent:
                 ca = CertificateAuthority.objects.get(name="%s" % parent.name)
                 if p_pf:
-                    enc_p_pf = md5_constructor(p_pf.encode("utf-8")).hexdigest()
+                    enc_p_pf = md5(p_pf.encode("utf-8")).hexdigest()
 
                 # Check parent passphrase
                 if ca.passphrase != enc_p_pf:
@@ -180,7 +184,7 @@ class CertificateForm(forms.ModelForm):
             if parent:
                 ca = CertificateAuthority.objects.get(name="%s" % parent.name)
                 if p_pf:
-                    enc_p_pf = md5_constructor(p_pf).hexdigest()
+                    enc_p_pf = md5(p_pf).hexdigest()
 
                 # Check parent passphrase
                 if ca.passphrase != enc_p_pf:
@@ -210,9 +214,9 @@ class X509ExtensionForm(forms.ModelForm):
 
         cleaned_data = self.cleaned_data
 
-        name = cleaned_data.get("name")
+        # name = cleaned_data.get("name")
         bc = cleaned_data.get("basic_constraints")
-        ku = cleaned_data.get("key_usage")
+        # ku = cleaned_data.get("key_usage")
         eku = cleaned_data.get("extended_key_usage")
         eku_c = cleaned_data.get("extended_key_usage_critical")
 
@@ -249,7 +253,7 @@ class DeleteForm(forms.Form):
             pf_in = ""
         else:
             # print(pf_raw.decode('utf8'))
-            pf_in = md5_constructor(pf_raw.encode("utf-8")).hexdigest()
+            pf_in = md5(pf_raw.encode("utf-8")).hexdigest()
 
         print(model)
         if model == "certificateauthority":

@@ -7,7 +7,7 @@ from .settings import PKI_ENABLE_EMAIL
 if PKI_ENABLE_EMAIL is True:
     try:
         from django.core.mail import EmailMessage
-        import zipfile
+        # import zipfile
     except ImportError as e:
         raise Exception(
             "Library import failed. Disable PKI_ENABLE_EMAIL or install/update the missing Python lib: %s" % e
@@ -17,14 +17,13 @@ if PKI_ENABLE_EMAIL is True:
 logger = logging.getLogger("pki")
 
 
-def SendCertificateData(obj, request):
+def send_certificate_data(obj, request):
     """Send the zipped certificate data as email.
-    
     Verify that the given object has all the flags set, create a zipfile and mail it to the
     email address from the certificate.
     """
 
-    ## Check that email flag is set in the DB
+    # Check that email flag is set in the DB
     if obj.email:
         zip_f = build_zip_for_object(obj, request)
 

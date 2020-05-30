@@ -1,4 +1,4 @@
-## django-pki exception middleware
+# django-pki exception middleware
 
 import sys
 from logging import getLogger

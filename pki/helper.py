@@ -19,7 +19,6 @@ logger = logging.getLogger("pki")
 
 def get_pki_icon_html(img, title="", css="centered", id=""):
     """Return HTML for given image.
-        
         Can add optional alt and title parameters.
         """
 
@@ -34,7 +33,6 @@ def get_pki_icon_html(img, title="", css="centered", id=""):
 
 def get_full_path_file(obj, ext):
     """Return file with ext associated to object.
-    
     """
     subdir = "certs"
     pem = ".pem"
@@ -45,19 +43,19 @@ def get_full_path_file(obj, ext):
         pem = ""
 
     if isinstance(obj, models.CertificateAuthority):
-        chain = c_name = obj.name
+        # chain = c_name = obj.name
         ca_dir = os.path.join(PKI_DIR, obj.name)
-        key_loc = os.path.join(ca_dir, "private")
+        # key_loc = os.path.join(ca_dir, "private")
     elif isinstance(obj, models.Certificate):
         if obj.parent:
-            chain = obj.parent.name
+            # chain = obj.parent.name
             ca_dir = os.path.join(PKI_DIR, obj.parent.name)
         else:
-            chain = obj.name
+            # chain = obj.name
             ca_dir = os.path.join(PKI_DIR, "_SELF_SIGNED_CERTIFICATES")
 
         c_name = obj.name
-        key_loc = os.path.join(ca_dir, "certs")
+        # key_loc = os.path.join(ca_dir, "certs")
     else:
         raise Exception("Given object type is unknown!")
 
@@ -66,7 +64,6 @@ def get_full_path_file(obj, ext):
 
 def files_for_object(obj):
     """Return files associated to object.
-    
     Return dict containing all files associated to object. Dict contains
     chain, crl, pem, csr, der, pkcs12 and key
     """
@@ -103,7 +100,6 @@ def files_for_object(obj):
 
 def subject_for_object(obj):
     """Return a subject string.
-    
     A OpenSSL compatible subject string is returned.
     """
 
@@ -140,7 +136,7 @@ def chain_recursion(r_id, store, id_dict):
 
     id_dict["ca"].append(i.pk)
 
-    ## Search for child certificates
+    # Search for child certificates
     child_certs = models.Certificate.objects.filter(parent=r_id)
     if child_certs:
         helper = []
@@ -194,7 +190,7 @@ def build_zip_for_object(obj):
     """Build zip with filed ob object."""
 
     try:
-        base_folder = "PKI_DATA_%s" % obj.name
+        # base_folder = "PKI_DATA_%s" % obj.name
         files = files_for_object(obj)
         zip_f = generate_temp_file()
 

@@ -135,7 +135,6 @@ def refresh_pki_metadata(ca_list):
 
 class Openssl:
     """OpenSSL command and task wrapper class
-    
     instance must be a CertificateAuthority or Certificate object.
     """
 
@@ -149,7 +148,7 @@ class Openssl:
             logger.error("Instance name '%s' is blacklisted!" % self.i.name)
             raise
 
-        if self.i.parent != None:
+        if self.i.parent:
             self.parent_certs = os.path.join(PKI_DIR, self.i.parent.name, "certs")
             self.crl = os.path.join(PKI_DIR, self.i.parent.name, "crl", "%s.crl.pem" % self.i.parent.name)
         else:
@@ -170,7 +169,7 @@ class Openssl:
                     try:
                         os.mkdir(self.ca_dir, 0o755)
                         os.mkdir(os.path.join(self.ca_dir, "certs"))
-                    except OSError as e:
+                    except OSError:
                         logger.exception("Failed to create directories for self-signed certificates %s" % self.ca_dir)
                         raise
 
@@ -194,7 +193,6 @@ class Openssl:
 
     def exec_openssl(self, command, env_vars=None):
         """Run a openssl command.
-        
         command is prefixed with openssl binary from PKI_OPENSSL_BIN
         env_vars is a dict containing the set environment variables
         """
@@ -221,7 +219,6 @@ class Openssl:
 
     def generate_key(self):
         """RSA key generation.
-        
         Key will be encrypted with des3 if passphrase is given.
         """
 
@@ -239,7 +236,6 @@ class Openssl:
 
     def generate_self_signed_cert(self):
         """Generate a self signed root certificate.
-        
         Serial is set to user specified value when PKI_SELF_SIGNED_SERIAL > 0
         """
 
@@ -329,7 +325,6 @@ class Openssl:
 
     def generate_pkcs12_encoded(self):
         """Generate a PKCS12 encoded certificate.
-        
         Passphrase is required as empty passwords not work in batch mode.
         """
 
@@ -360,7 +355,6 @@ class Openssl:
 
     def remove_complete_certificate(self):
         """Remove all files related to the given certificate.
-        
         This includes the hash alias, key, csr and the certificate itself.
         """
 
@@ -386,7 +380,6 @@ class Openssl:
 
     def sign_csr(self):
         """Sign the CSR.
-        
         Certificate signing and hash creation in CA's certificate directory
         """
 
@@ -416,7 +409,6 @@ class Openssl:
 
     def revoke_certificate(self, ppf):
         """Revoke a certificate.
-        
         Requires the parents passphrase.
         """
 
@@ -435,8 +427,7 @@ class Openssl:
 
     def generate_crl(self, ca=None, pf=None):
         """CRL (Certificate Revocation List) generation.
-        
-        Requires the Certificate Authority and the passphrase. 
+        Requires the Certificate Authority and the passphrase.
         """
 
         crl = os.path.join(PKI_DIR, ca, "crl", "%s.crl.pem" % ca)
@@ -451,21 +442,20 @@ class Openssl:
 
     def update_ca_chain_file(self):
         """Build/update the CA chain.
-        
         Generates a chain file containing all CA's required to verify the given certificate.
         """
 
         # Build list of parents
         chain = []
-        chain_str = ""
+        # chain_str = ""
 
         p = self.i.parent
 
-        if self.i.parent == None:
+        if not self.i.parent:
             chain.append(self.i.name)
         else:
             chain.append(self.i.name)
-            while p != None:
+            while p:
                 chain.append(p.name)
                 p = p.parent
 
@@ -488,12 +478,11 @@ class Openssl:
                 w.write(output)
 
             w.close()
-        except:
+        except FileExistsError:
             raise Exception("Failed to write chain file!")
 
     def get_serial_from_cert(self):
         """Extract serial from certificate.
-        
         Use openssl to get the serial number from a certificate.
         """
 
@@ -510,7 +499,6 @@ class Openssl:
 
     def get_hash_from_cert(self):
         """Extract hash from certificate.
-        
         Use openssl to get the hash value from a certificate.
         """
 
@@ -521,7 +509,6 @@ class Openssl:
 
     def get_revoke_status_from_cert(self):
         """Get the revoke status from certificate.
-        
         Certificate is revoked => True
         Certificate is active  => False
         """
@@ -532,9 +519,9 @@ class Openssl:
         serial_re = re.compile("^\s+Serial\sNumber\:\s+(\w+)")
         lines = output.split("\n")
 
-        for l in lines:
-            if serial_re.match(l):
-                if serial_re.match(l).group(1) == self.i.serial:
+        for line in lines:
+            if serial_re.match(line):
+                if serial_re.match(line).group(1) == self.i.serial:
                     logger.info("The certificate is revoked")
                     return True
 

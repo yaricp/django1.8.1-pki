@@ -6,13 +6,12 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import Http404, HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
-from django.template import RequestContext
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 
-from .email import SendCertificateData
+from .email import send_certificate_data
 from .forms import DeleteForm
-from .graphviz import ObjectChain, ObjectTree
+from .graphviz import object_chain, object_tree
 from .helper import (
     build_delete_item,
     build_ovpn_for_object,
@@ -33,13 +32,12 @@ def home_page(request):
     certs = CertificateAuthority.objects.filter(public=True, active=True)
     personal_certs_all = Certificate.objects.filter(user=request.user.username)
     personal_certs = [c for c in personal_certs_all if not c.is_server_side_cert]
-    return render(request, "home.html", {"certs": certs, "personal_certs": personal_certs,})
+    return render(request, "home.html", {"certs": certs, "personal_certs": personal_certs, })
 
 
 def pki_download(request, model, id, ext):
     """
     Download files (zip or crl or cert or p12).
-    
     """
     if model == "certificateauthority":
         c = get_object_or_404(CertificateAuthority, pk=id, public=True)
@@ -68,7 +66,7 @@ def pki_download(request, model, id, ext):
         file = get_full_path_file(c, ext="cert")
     elif ext == "p12":
         file = get_full_path_file(c, ext="cert.p12")
-    ## open and read the file if it exists
+    # open and read the file if it exists
     print("FILE:" + str(file))
 
     if os.path.exists(file):
@@ -169,15 +167,10 @@ def pki_download(request, model, id, ext):
 #        logger.error( "File not found: %s" % zip )
 #        raise Http404
 
-##------------------------------------------------------------------##
-## Graphviz views
-##------------------------------------------------------------------##
-
 
 @login_required
 def pki_chain(request, model, id):
     """Display the CA chain as PNG.
-    
     Requires PKI_ENABLE_GRAPHVIZ set to true. Type (ca/cert) and ID are used to determine the object.
     Create object chain PNG using graphviz and return it to the user.
     """
@@ -192,7 +185,7 @@ def pki_chain(request, model, id):
         obj = get_object_or_404(Certificate, pk=id)
 
     png = generate_temp_file()
-    ObjectChain(obj, png)
+    object_chain(obj, png)
 
     try:
         if os.path.exists(png):
@@ -211,7 +204,6 @@ def pki_chain(request, model, id):
 @login_required
 def pki_tree(request, id):
     """Display the CA tree as PNG.
-    
     Requires PKI_ENABLE_GRAPHVIZ set to true. Only works for Certificate Authorities.
     All object related to the CA obj are fetched and displayed in a Graphviz tree.
     """
@@ -223,7 +215,7 @@ def pki_tree(request, id):
     obj = get_object_or_404(CertificateAuthority, pk=id)
     png = generate_temp_file()
 
-    ObjectTree(obj, png)
+    object_tree(obj, png)
 
     try:
         if os.path.exists(png):
@@ -240,15 +232,9 @@ def pki_tree(request, id):
     return response
 
 
-##------------------------------------------------------------------##
-## Email views
-##------------------------------------------------------------------##
-
-
 @login_required
 def pki_email(request, model, id):
     """Send email with certificate data attached.
-    
     Requires PKI_ENABLE_EMAIL set to true. Type (ca/cert) and ID are used to determine the object.
     Build ZIP, send email and return to changelist.
     """
@@ -263,7 +249,7 @@ def pki_email(request, model, id):
         obj = get_object_or_404(Certificate, pk=id)
 
     if obj.email and obj.active:
-        SendCertificateData(obj, request)
+        send_certificate_data(obj, request)
     else:
         raise Http404
 
@@ -274,7 +260,6 @@ def pki_email(request, model, id):
 @login_required
 def pki_refresh_metadata(request):
     """Rebuild PKI metadate.
-    
     Renders openssl.conf template and cleans PKI_DIR.
     """
 
@@ -304,7 +289,6 @@ def admin_history(request, model, id):
         opts = X509Extension._meta
 
     changelogs = PkiChangelog.objects.filter(model_id=ct.pk).filter(object_id=id)
-    print( model_obj._meta.app_label)
     return render(
         request,
         "admin/pki/object_changelogs.html",
@@ -334,32 +318,33 @@ def admin_delete(request, model, id):
 
         opts = CertificateAuthority._meta
         object = item.name
-        initial_id = False
+        # initial_id = False
 
         if item.parent_id:
-            initial_id = item.parent_id
+            # initial_id = item.parent_id
             auth_object = CertificateAuthority.objects.get(pk=item.parent_id).name
         else:
-            initial_id = item.pk
+            # initial_id = item.pk
             auth_object = item.name
     elif model == "certificate":
         try:
             item = Certificate.objects.select_related().get(pk=id)
-        except:
+        except Exception:
             raise Http404
 
         if not item.parent_id:
             parent_object_name = "self-signed certificate"
-            initial_id = item.id
+            # initial_id = item.id
             authentication_obj = item.name
         else:
-            initial_id = item.parent_id
+            # initial_id = item.parent_id
             authentication_obj = item.parent.name
 
         div_content = build_delete_item(item)
         deleted_objects.append(
             mark_safe(
-                'Certificate: <a href="%s">%s</a> <img src="%spki/img/plus.png" class="switch" /><div class="details">%s</div>'
+                'Certificate: <a href="%s">%s</a> <img src="%spki/img/plus.png" class="switch" />'
+                '<div class="details">%s</div>'
                 % (reverse("admin:pki_certificate_change", args=(item.pk,)), item.name, STATIC_URL, div_content)
             )
         )
@@ -383,7 +368,6 @@ def admin_delete(request, model, id):
 
         form.fields["_model"].initial = model
         form.fields["_id"].initial = id
-    print(form)
     return render(
         request,
         "admin/pki/delete_confirmation.html",
@@ -409,4 +393,4 @@ def show_exception(request):
     log = f.readlines()
     f.close()
 
-    return render_to_response("500.html", {"log": log})
+    return render("500.html", request, {"log": log})

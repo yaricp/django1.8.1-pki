@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import *
+from .views import home_page, pki_download, pki_tree, pki_chain, pki_email, pki_refresh_metadata
 
 app_name = "polls"
 urlpatterns = [
