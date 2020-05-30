@@ -1,10 +1,7 @@
 import logging
 import os
 
-from django.shortcuts import get_object_or_404
-
-from .helper import build_zip_for_object, files_for_object, subject_for_object
-from .models import Certificate, CertificateAuthority
+from .helper import build_zip_for_object, subject_for_object
 from .settings import PKI_ENABLE_EMAIL
 
 if PKI_ENABLE_EMAIL is True:
@@ -17,12 +14,7 @@ if PKI_ENABLE_EMAIL is True:
         )
 
 
-
 logger = logging.getLogger("pki")
-
-##------------------------------------------------------------------##
-## Email functions
-##------------------------------------------------------------------##
 
 
 def SendCertificateData(obj, request):
@@ -36,7 +28,7 @@ def SendCertificateData(obj, request):
     if obj.email:
         zip_f = build_zip_for_object(obj, request)
 
-        ## Read ZIP content and remove it
+        # Read ZIP content and remove it
         try:
             if os.path.exists(zip_f):
                 f = open(zip_f)
@@ -48,7 +40,7 @@ def SendCertificateData(obj, request):
             logger.error("Failed to read zipfile: %s" % e)
             raise Exception(e)
 
-        ## Build email obj and send it out
+        # Build email obj and send it out
         parent_name = "self-signed"
         if obj.parent:
             parent_name = obj.parent.common_name

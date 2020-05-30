@@ -1,9 +1,8 @@
 {% extends "admin/object_history.html" %}
-{% load media_url %}
+{% load static %}
 
 {% block extrahead %}
-<script type="text/javascript">var MEDIA_URL = "{% media_url %}";</script>
-<link href="{% media_url %}css/pki.css" type="text/css" media="screen" rel="stylesheet" /> 
+<link href="{% static 'css/pki.css' %}" type="text/css" media="screen" rel="stylesheet" />
 {% endblock %}
 
 {% block content %}

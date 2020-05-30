@@ -16,3 +16,4 @@ venv*
 .eric*
 pki/PKI
 static/
+.tox

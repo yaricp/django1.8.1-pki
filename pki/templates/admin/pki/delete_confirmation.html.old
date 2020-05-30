@@ -1,0 +1,62 @@
+{% extends "admin/delete_confirmation.html" %}
+{% load i18n %}
+{% load static %}
+
+{% block bodyclass %}{{ block.super }} app-{{ opts.app_label }} model-{{ opts.model_name }} delete-confirmation{% endblock %}
+
+{% block extrahead %}
+    {{ block.super }}
+    {{ media }}
+    <script type="text/javascript" src="{% static 'js/jquery-1.5.min.js' %}" />
+    <script type="text/javascript" src="{% static 'js/delete_detail.min.js' %}" />
+    <link href="{% static 'css/pki.css' %}" type="text/css" media="screen" rel="stylesheet" />
+{% endblock %}
+
+
+
+{% block content %}
+    <p>WEFWEFVWER</p>>
+    {% if perms_lacking %}
+        <p>vmnbmnbmn
+            {% blocktrans with object as escaped_object %}
+                Deleting the {{ object_name }} '{{ escaped_object }}'
+                would result in deleting related objects, but your account doesn't have permission to delete the
+                following types of objects:
+            {% endblocktrans %}
+        </p>
+        <ul>
+        {% for obj in perms_lacking %}
+            <li>{{ obj }}</li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>
+            {% blocktrans with object as escaped_object %}
+                Are you sure you want to delete the {{ object_name }} "{{ escaped_object }}"?
+                All of the following related items will be deleted:
+            {% endblocktrans %}
+        </p>
+        <ul>{{ deleted_objects|unordered_list }}</ul>
+        
+        <hr />
+        
+        <form action="" method="post">{% csrf_token %}
+        <div>
+        
+        <h3>
+            {% blocktrans with auth_object as escaped_object %}
+                Please enter the passphrase for the {{ parent_object_name }} "<strong>{{ escaped_object }}</strong>":
+            {% endblocktrans %}</h3>
+        <p />{{ form.as_p }}
+        
+        </div>
+        
+        <input type="hidden" name="post" value="yes" />
+        <input type="submit" value="{% trans "Yes, I'm sure" %}" />
+        &nbsp;|&nbsp;<a href="../../">No, back to changelist</a>
+        </div>
+        </form>
+    {% endif %}
+
+{% endblock %}
+

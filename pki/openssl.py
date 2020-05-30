@@ -105,7 +105,7 @@ def refresh_pki_metadata(ca_list):
                     logger.warning("Directory %s does not contain any metadata, preserving it" % d)
 
         x509_list = []
-        for x509 in models.x509Extension.objects.all():
+        for x509 in models.X509Extension.objects.all():
             if x509.is_ca():
                 x509.ca = True
             else:

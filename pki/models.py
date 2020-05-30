@@ -297,7 +297,6 @@ COUNTRY = (
 
 
 def validate_subject_altname(value):
-    print("Value:", value)
     allowed = {
         "email": "^copy|[\w\-\.]+\@[\w\-\.]+\.\w{2,4}$",
         "IP": "^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$",
@@ -305,7 +304,6 @@ def validate_subject_altname(value):
     }
 
     items = value.split(",")
-    print("items: ", items)
     for i in items:
         print(i)
         if not re.match("^\s*(email|IP|DNS)\s*:\s*.+$", i):
@@ -362,7 +360,7 @@ class CertificateBase(models.Model):
         max_length=32, choices=ACTIONS, default="create", help_text="Yellow fields can/have to be modified!"
     )
     extension = models.ForeignKey(
-        to="x509Extension", blank=True, null=True, verbose_name="x509 Extension", on_delete=models.CASCADE
+        to="X509Extension", blank=True, null=True, verbose_name="x509 Extension", on_delete=models.CASCADE
     )
     crl_dpoints = models.CharField(
         max_length=255,
@@ -379,8 +377,8 @@ class CertificateBase(models.Model):
     class Meta:
         abstract = True
 
-    def State(self):
-        """Overwrite the Booleanfield admin for admin's changelist"""
+    def status(self):
+        """Overwrite the Boolean field admin for admin's changelist"""
 
         if not self.pk:
             return ""
@@ -390,10 +388,10 @@ class CertificateBase(models.Model):
         else:
             return get_pki_icon_html("icon-no.gif", "Certificate is revoked", css="")
 
-    State.allow_tags = True
-    State.short_description = "State"
+    status.allow_tags = True
+    status.short_description = "status"
 
-    def Valid_center(self):
+    def valid_center(self):
         """Overwrite the Booleanfield admin for admin's changelist"""
 
         if self.active is True:
@@ -401,20 +399,20 @@ class CertificateBase(models.Model):
         else:
             return get_pki_icon_html("icon-no.gif", "Certificate is revoked", id="active_%d" % self.pk)
 
-    Valid_center.allow_tags = True
-    Valid_center.short_description = "Valid"
-    Valid_center.admin_order_field = "active"
+    valid_center.allow_tags = True
+    valid_center.short_description = "Valid"
+    valid_center.admin_order_field = "active"
 
-    def Serial_align_right(self):
+    def serial_align_right(self):
         """Make serial in changelist right justified"""
 
         return format_html('<div class="serial_align_right">%s</div>' % self.serial)
 
-    Serial_align_right.allow_tags = True
-    Serial_align_right.short_description = "Serial"
-    Serial_align_right.admin_order_field = "serial"
+    serial_align_right.allow_tags = True
+    serial_align_right.short_description = "Serial"
+    serial_align_right.admin_order_field = "serial"
 
-    def Description(self):
+    def desc(self):
         """Limit description for changelist.
         
         Limit description to 30 characters to make changelist stay on one line per item.
@@ -426,17 +424,17 @@ class CertificateBase(models.Model):
         else:
             return "%s" % self.description
 
-    Description.allow_tags = True
-    Description.admin_order_field = "description"
+    desc.allow_tags = True
+    desc.admin_order_field = "description"
 
-    def Creation_date(self):
+    def creation_date(self):
         """Return creation date in custom format"""
 
         return self.created.strftime("%Y-%m-%d %H:%M:%S")
 
-    Creation_date.admin_order_field = "created"
+    creation_date.admin_order_field = "created"
 
-    def Revocation_date(self):
+    def revocation_date(self):
         """Return revocation date in custom format"""
         if self.revoked:
             out = self.revoked.strftime("%Y-%m-%d %H:%M:%S")
@@ -444,9 +442,9 @@ class CertificateBase(models.Model):
             out = ""
         return out
 
-    Revocation_date.admin_order_field = "revoked"
+    revocation_date.admin_order_field = "revoked"
 
-    def Expiry_date(self):
+    def expiry_date_show(self):
         """Return expiry date with days left.
         
         Return color marked expiry date based on days left.
@@ -471,18 +469,18 @@ class CertificateBase(models.Model):
         else:
             return format_html("%s (%sd)" % (self.expiry_date, diff.days))
 
-    Expiry_date.allow_tags = True
-    Expiry_date.admin_order_field = "expiry_date"
+    expiry_date_show.allow_tags = True
+    expiry_date_show.admin_order_field = "expiry_date"
 
-    def Chain(self):
+    def chain(self):
         """Display chain with working arrows"""
 
         return self.ca_chain
 
-    Chain.allow_tags = True
-    Chain.short_description = "CA Chain"
+    chain.allow_tags = True
+    chain.short_description = "CA Chain"
 
-    def Chain_link(self):
+    def chain_link(self):
         """Display chain link.
         
         If PKI_ENABLE_GRAPHVIZ is True a colored chain link is displayed. Otherwise
@@ -500,10 +498,10 @@ class CertificateBase(models.Model):
         else:
             return get_pki_icon_html("chain.png", "Enable setting PKI_ENABLE_GRAPHVIZ")
 
-    Chain_link.allow_tags = True
-    Chain_link.short_description = "Chain"
+    chain_link.allow_tags = True
+    chain_link.short_description = "Chain"
 
-    def Email_link(self):
+    def email_link(self):
         """Display email link based on status.
         
         If PKI_ENABLE_EMAIL or certificate isn't active a disabled (b/w) icon is displayed.
@@ -537,8 +535,8 @@ class CertificateBase(models.Model):
                     "mail--exclamation.png", "Certificate has no email set. Disabled", id="email_delivery_%d" % self.pk
                 )
 
-    Email_link.allow_tags = True
-    Email_link.short_description = "Delivery"
+    email_link.allow_tags = True
+    email_link.short_description = "Delivery"
 
     def download_link_zip(self):
         """Return a download icon.
@@ -654,7 +652,7 @@ class CertificateBase(models.Model):
     download_link_crl.allow_tags = True
     download_link_crl.short_description = "Download CRL"
 
-    def Parent_link(self):
+    def parent_link(self):
         """Return parent name.
         
         Returns parent's name when parent != None or self-signed
@@ -671,11 +669,11 @@ class CertificateBase(models.Model):
                 % (reverse("admin:pki_%s_change" % self.__class__.__name__.lower(), args=(self.pk,)))
             )
 
-    Parent_link.allow_tags = True
-    Parent_link.short_description = "Parent"
-    Parent_link.admin_order_field = "parent"
+    parent_link.allow_tags = True
+    parent_link.short_description = "Parent"
+    parent_link.admin_order_field = "parent"
 
-    def Certificate_Dump(self):
+    def certificate_dump(self):
         """Dump of the certificate"""
 
         if self.pk and self.active:
@@ -684,18 +682,18 @@ class CertificateBase(models.Model):
         else:
             return "Nothing to display"
 
-    Certificate_Dump.allow_tags = True
-    Certificate_Dump.short_description = "Certificate dump"
+    certificate_dump.allow_tags = True
+    certificate_dump.short_description = "Certificate dump"
 
-    def CA_Clock(self):
+    def ca_clock(self):
         """"""
         return format_html(
             '<div id="clock_container"><img src="%s/img/clock-frame.png" style="margin-right:5px"/>'
             '<span id="clock"></span></div>' % STATIC_URL
         )
 
-    CA_Clock.allow_tags = True
-    CA_Clock.short_description = "CA clock"
+    ca_clock.allow_tags = True
+    ca_clock.short_description = "CA clock"
 
     def Update_Changelog(self, obj, user, action, changes):
         """Update changelog for given object"""
@@ -747,7 +745,8 @@ class CertificateAuthority(CertificateBase):
 
     class Meta:
         db_table = "pki_certificateauthority"
-        verbose_name_plural = "Certificate Authorities"
+        verbose_name = "Certificate Authorities"
+        verbose_name_plural = "Certificates Authorities"
         permissions = (("can_download", "Can download",),)
 
     def __unicode__(self):
@@ -1010,7 +1009,6 @@ class CertificateAuthority(CertificateBase):
         else:
             known_cas = list(CertificateAuthority.objects.all())
 
-        print("REBUILD: ", known_cas[0].name, known_cas[0].common_name)
         refresh_pki_metadata(known_cas)
 
     def is_edge_ca(self):
@@ -1018,7 +1016,7 @@ class CertificateAuthority(CertificateBase):
 
         return "pathlen:0" in self.extension.basic_constraints.lower()
 
-    def Tree_link(self):
+    def tree_link(self):
 
         if PKI_ENABLE_GRAPHVIZ:
             return format_html(
@@ -1031,10 +1029,10 @@ class CertificateAuthority(CertificateBase):
         else:
             return get_pki_icon_html("tree_disabled.png", "Enable setting PKI_ENABLE_GRAPHVIZ")
 
-    Tree_link.allow_tags = True
-    Tree_link.short_description = "Tree"
+    tree_link.allow_tags = True
+    tree_link.short_description = "Tree"
 
-    def Child_certs(self):
+    def child_certs(self):
         """Show associated client certificates"""
 
         if not self.is_edge_ca():
@@ -1050,8 +1048,8 @@ class CertificateAuthority(CertificateBase):
                 )
             )
 
-    Child_certs.allow_tags = True
-    Child_certs.short_description = "Children"
+    child_certs.allow_tags = True
+    child_certs.short_description = "Children"
 
 
 class Certificate(CertificateBase):
@@ -1090,6 +1088,7 @@ class Certificate(CertificateBase):
 
     class Meta:
         db_table = "pki_certificate"
+        verbose_name = "Certificate"
         verbose_name_plural = "Certificates"
         permissions = (("can_download", "Can download",),)
         unique_together = (
@@ -1138,7 +1137,7 @@ class Certificate(CertificateBase):
     def save(self, *args, **kwargs):
         """Save the Certificate object"""
 
-        c_user = self.user
+        c_user = getattr(self, "user", None)
         c_action = self.action
         c_list = []
 
@@ -1163,12 +1162,12 @@ class Certificate(CertificateBase):
                 elif self.action == "renew":
                     c_list.append('Renewed certificate "%s"' % self.common_name)
 
-                    ## Revoke if certificate is active
+                    # Revoke if certificate is active
                     if self.parent and not action.get_revoke_status_from_cert():
                         action.revoke_certificate(self.parent_passphrase)
                         action.generate_crl(self.parent.name, self.parent_passphrase)
 
-                    ## Renew certificate and update CRL
+                    # Renew certificate and update CRL
                     if self.parent == None:
                         action.generate_self_signed_cert()
                     else:
@@ -1176,7 +1175,7 @@ class Certificate(CertificateBase):
                         action.sign_csr()
                         action.generate_crl(self.parent.name, self.parent_passphrase)
 
-                    ## Modify fields
+                    # Modify fields
                     prev.created = datetime.datetime.now()
                     delta = datetime.timedelta(self.valid_days)
                     prev.expiry_date = datetime.datetime.now() + delta
@@ -1188,7 +1187,7 @@ class Certificate(CertificateBase):
                     prev.active = True
                     prev.revoked = None
 
-                    ## Make sure possibly updated fields are saved to DB
+                    # Make sure possibly updated fields are saved to DB
                     if prev.country != self.country:
                         c_list.append('Updated country to "%s"' % self.country)
                     if prev.locality != self.locality:
@@ -1206,7 +1205,7 @@ class Certificate(CertificateBase):
                     prev.email = self.email
                     prev.OU = self.OU
 
-                    ## Get the new serial
+                    # Get the new serial
                     prev.serial = action.get_serial_from_cert()
                     c_list.append("Serial number changed to %s" % prev.serial)
 
@@ -1236,12 +1235,12 @@ class Certificate(CertificateBase):
                     else:
                         action.remove_der_encoded()
 
-                ## Update description. This is always allowed
+                # Update description. This is always allowed
                 if prev.description != self.description:
                     c_list.append('Updated description to "%s"' % self.description)
                     prev.description = self.description
 
-                ## Save the data
+                # Save the data
                 self = prev
                 self.action = "update"
             else:
@@ -1323,8 +1322,8 @@ class PkiChangelog(models.Model):
         return str(self.pk)
 
 
-class x509Extension(models.Model):
-    """x509 extensions"""
+class X509Extension(models.Model):
+    """X509 extensions"""
 
     SUBJECT_KEY_IDENTIFIER = (("hash", "hash"),)
     AUTHORITY_KEY_IDENTIFIER = (("keyid:always,issuer:always", "keyid: always, issuer: always"),)
@@ -1396,7 +1395,7 @@ class x509Extension(models.Model):
         """Save the x509 Extension object"""
 
         if not self.pk:
-            super(x509Extension, self).save(*args, **kwargs)
+            super(X509Extension, self).save(*args, **kwargs)
             refresh_pki_metadata(CertificateAuthority.objects.all())
 
     def CrlDpoint_center(self):

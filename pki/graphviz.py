@@ -10,7 +10,6 @@ if PKI_ENABLE_GRAPHVIZ is True:
         raise Exception("Failed to import pygraphviz. Disable PKI_ENABLE_GRAPHVIZ or install pygraphviz: %s" % e)
 
 
-
 def ObjectChain(object, target):
     """Render object chain PNG.
     

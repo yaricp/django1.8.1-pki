@@ -5,10 +5,6 @@ from django.shortcuts import get_object_or_404
 from .models import *
 from .settings import PKI_CA_NAME_BLACKLIST, PKI_DIR
 
-##------------------------------------------------------------------##
-## Form validation
-##------------------------------------------------------------------##
-
 
 class CertificateAuthorityForm(forms.ModelForm):
     """Validation class for CertificateAuthority form"""
@@ -46,22 +42,22 @@ class CertificateAuthorityForm(forms.ModelForm):
                 if not pf_v or pf != pf_v:
                     self.errors["passphrase_verify"] = ErrorList(["Passphrase mismtach!"])
 
-                ## Verify that we're not creating a certificate that already exists
+                # Verify that we're not creating a certificate that already exists
                 if name and os.path.isdir(os.path.join(PKI_DIR, name)):
                     self._errors["name"] = ErrorList(['Name "%s" is already in use!' % name])
 
-            ## Take care that parent is active when action is revoke
+            # Take care that parent is active when action is revoke
             if action == "renew":
                 ca = CertificateAuthority.objects.get(name="%s" % name)
 
-                ## Prevent renewal when parent is disabled
+                # Prevent renewal when parent is disabled
                 if ca.parent is not None and ca.parent.active is not True:
                     self._errors["action"] = ErrorList(
                         ['Cannot renew CA certificate when parent "%s" isn\'t active!' % ca.parent.name]
                     )
                     return cleaned_data
 
-                ## Compare passphrase
+                # Compare passphrase
                 if not pf or (ca.passphrase != md5_constructor(pf).hexdigest()):
                     self._errors["passphrase"] = ErrorList(
                         ['Passphrase is wrong. Enter correct passphrase for CA "%s"' % cleaned_data.get("common_name")]
@@ -72,20 +68,20 @@ class CertificateAuthorityForm(forms.ModelForm):
                 if p_pf:
                     enc_p_pf = md5_constructor(p_pf).hexdigest()
 
-                ## Check if parent allows sub CA
+                # Check if parent allows sub CA
                 if ca.is_edge_ca():
                     self._errors["parent"] = ErrorList(
                         ["Parent's x509 extension doesn't allow a sub CA. Only non CA certificates can be created"]
                     )
 
-                ## Check parent passphrase if not RootCA
+                # Check parent passphrase if not RootCA
                 if ca.passphrase != enc_p_pf:
                     self._errors["parent_passphrase"] = ErrorList(
                         ['Passphrase is wrong. Enter correct passphrase for CA "%s"' % parent]
                     )
 
-            ## Verify CRL distribution settings
-            x509 = get_object_or_404(x509Extension, name=extension)
+            # Verify CRL distribution settings
+            x509 = get_object_or_404(X509Extension, name=extension)
             if x509.crl_distribution_point and not crl_dpoints:
                 self._errors["crl_dpoints"] = ErrorList(
                     ['CRL Distribution Points are required by x509 extension "%s"' % extension]
@@ -95,7 +91,7 @@ class CertificateAuthorityForm(forms.ModelForm):
                 ca = CertificateAuthority.objects.get(name="%s" % parent.name)
                 enc_p_pf = md5_constructor(cleaned_data.get("parent_passphrase")).hexdigest()
 
-                ## Check parent passphrase
+                # Check parent passphrase
                 if ca.passphrase != enc_p_pf:
                     self._errors["parent_passphrase"] = ErrorList(
                         ['Passphrase is wrong. Enter correct passphrase for CA "%s"' % parent]
@@ -145,7 +141,7 @@ class CertificateForm(forms.ModelForm):
                 if (pf and not pf_v) or pf != pf_v:
                     self.errors["passphrase_verify"] = ErrorList(["Passphrase mismtach detected"])
 
-                ## Verify that we're not creating a certificate that already exists
+                # Verify that we're not creating a certificate that already exists
                 if parent:
                     if os.path.exists(os.path.join(PKI_DIR, parent.name, "certs", "%s.key.pem" % name)):
                         self._errors["name"] = ErrorList(['Name "%s" is already in use!' % name])
@@ -153,7 +149,7 @@ class CertificateForm(forms.ModelForm):
                     if os.path.exists(os.path.join(PKI_DIR, "_SELF_SIGNED_CERTIFICATES", "certs", "%s.key.pem" % name)):
                         self._errors["name"] = ErrorList(['Name "%s" is already in use!' % name])
 
-            ## Take care that parent is active when action is revoke
+            # Take care that parent is active when action is revoke
             if action == "renew":
                 cert = Certificate.objects.get(name="%s" % name)
 
@@ -168,14 +164,14 @@ class CertificateForm(forms.ModelForm):
                 if p_pf:
                     enc_p_pf = md5_constructor(p_pf.encode("utf-8")).hexdigest()
 
-                ## Check parent passphrase
+                # Check parent passphrase
                 if ca.passphrase != enc_p_pf:
                     self._errors["parent_passphrase"] = ErrorList(
                         ['Passphrase is wrong. Enter correct passphrase for CA "%s"' % parent]
                     )
 
-            ## Verify CRL distribution settings
-            x509 = get_object_or_404(x509Extension, name=extension)
+            # Verify CRL distribution settings
+            x509 = get_object_or_404(X509Extension, name=extension)
             if x509.crl_distribution_point and not crl_dpoints:
                 self._errors["crl_dpoints"] = ErrorList(
                     ['CRL Distribution Points are required by x509 extension "%s"' % extension]
@@ -186,7 +182,7 @@ class CertificateForm(forms.ModelForm):
                 if p_pf:
                     enc_p_pf = md5_constructor(p_pf).hexdigest()
 
-                ## Check parent passphrase
+                # Check parent passphrase
                 if ca.passphrase != enc_p_pf:
                     self._errors["parent_passphrase"] = ErrorList(
                         ['Passphrase is wrong. Enter correct passphrase for CA "%s"' % parent]
@@ -202,11 +198,11 @@ class CertificateForm(forms.ModelForm):
         return cleaned_data
 
 
-class x509ExtensionForm(forms.ModelForm):
+class X509ExtensionForm(forms.ModelForm):
     """Validation class for x590 Extensions form"""
 
     class Meta:
-        model = x509Extension
+        model = X509Extension
         fields = "__all__"
 
     def clean(self):
@@ -234,11 +230,6 @@ class x509ExtensionForm(forms.ModelForm):
         return cleaned_data
 
 
-##------------------------------------------------------------------##
-## Dynamic forms
-##------------------------------------------------------------------##
-
-
 class DeleteForm(forms.Form):
     """Deletion form base class"""
 
@@ -250,7 +241,6 @@ class DeleteForm(forms.Form):
         """Let's veridfy the given passphrase"""
 
         cleaned_data = self.cleaned_data
-
         model = cleaned_data.get("_model")
         obj_id = cleaned_data.get("_id")
         pf_raw = cleaned_data.get("passphrase")
@@ -258,8 +248,10 @@ class DeleteForm(forms.Form):
         if not pf_raw or pf_raw == "":
             pf_in = ""
         else:
-            pf_in = md5_constructor(pf_raw).hexdigest()
+            # print(pf_raw.decode('utf8'))
+            pf_in = md5_constructor(pf_raw.encode("utf-8")).hexdigest()
 
+        print(model)
         if model == "certificateauthority":
             obj = get_object_or_404(CertificateAuthority, pk=obj_id)
 

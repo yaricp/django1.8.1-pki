@@ -25,16 +25,15 @@ from .models import Certificate, CertificateAuthority
 from .openssl import refresh_pki_metadata
 from .settings import PKI_ENABLE_EMAIL, PKI_ENABLE_GRAPHVIZ, PKI_LOG, STATIC_URL
 
-
 logger = logging.getLogger("pki")
 
 
 @login_required
 def home_page(request):
     certs = CertificateAuthority.objects.filter(public=True, active=True)
-    personal_certs_all = Certificate.objects.filter(owner=request.user)
+    personal_certs_all = Certificate.objects.filter(user=request.user.username)
     personal_certs = [c for c in personal_certs_all if not c.is_server_side_cert]
-    return render("home.html", {"certs": certs, "personal_certs": personal_certs, "request": request})
+    return render(request, "home.html", {"certs": certs, "personal_certs": personal_certs,})
 
 
 def pki_download(request, model, id, ext):
@@ -272,11 +271,6 @@ def pki_email(request, model, id):
     return HttpResponseRedirect(reverse("admin:pki_%s_changelist" % model))
 
 
-##------------------------------------------------------------------##
-## Management views
-##------------------------------------------------------------------##
-
-
 @login_required
 def pki_refresh_metadata(request):
     """Rebuild PKI metadate.
@@ -290,11 +284,6 @@ def pki_refresh_metadata(request):
 
     back = request.META.get("HTTP_REFERER", None) or "/admin"
     return HttpResponseRedirect(back)
-
-
-##------------------------------------------------------------------##
-## Admin views
-##------------------------------------------------------------------##
 
 
 @login_required
@@ -332,6 +321,7 @@ def admin_delete(request, model, id):
     title = "Are you sure?"
 
     if model == "certificateauthority":
+
         item = get_object_or_404(CertificateAuthority, pk=id)
         chain_recursion(item.id, deleted_objects, id_dict={"cert": [], "ca": [],})
 
@@ -367,11 +357,11 @@ def admin_delete(request, model, id):
             )
         )
 
-        ## Fill the required data for delete_confirmation.html template
+        # Fill the required data for delete_confirmation.html template
         opts = Certificate._meta
         object = item.name
 
-        ## Set the CA to verify the passphrase against
+        # Set the CA to verify the passphrase against
         auth_object = authentication_obj
 
     if request.method == "POST":
@@ -386,27 +376,22 @@ def admin_delete(request, model, id):
 
         form.fields["_model"].initial = model
         form.fields["_id"].initial = id
-
+    print(form)
     return render(
+        request,
         "admin/pki/delete_confirmation.html",
         {
             "deleted_objects": deleted_objects,
             "object_name": opts.verbose_name,
-            "app_label": opts.app_label,
             "opts": opts,
-            "object": object,
+            "object": item,
+            "object_id": item.pk,
             "form": form,
             "auth_object": auth_object,
             "parent_object_name": parent_object_name,
             "title": title,
         },
-        RequestContext(request),
     )
-
-
-##------------------------------------------------------------------##
-## Exception viewer
-##------------------------------------------------------------------##
 
 
 @login_required

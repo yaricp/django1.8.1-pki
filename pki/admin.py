@@ -6,15 +6,11 @@ from django.db.models import Q
 from django.http import HttpResponseRedirect
 from django.urls import path
 
-from .forms import CertificateAuthorityForm, CertificateForm, x509ExtensionForm
-from .models import Certificate, CertificateAuthority, x509Extension
+from .forms import CertificateAuthorityForm, CertificateForm, X509ExtensionForm
+from .models import Certificate, CertificateAuthority, X509Extension
 from .openssl import refresh_pki_metadata
 from .settings import JQUERY_URL, PKI_DIR, PKI_LOG, PKI_LOGLEVEL
 from .views import admin_delete, admin_history
-
-##------------------------------------------------------------------##
-## Create PKI_DIR if it's missing
-##------------------------------------------------------------------##
 
 if not os.path.exists(PKI_DIR):
     try:
@@ -22,9 +18,6 @@ if not os.path.exists(PKI_DIR):
     except OSError as e:
         print("Failed to create PKI_DIR %s: %s" % (PKI_DIR, e))
 
-##------------------------------------------------------------------##
-## Initialize logging
-##------------------------------------------------------------------##
 
 LOG_LEVELS = {
     "debug": logging.DEBUG,
@@ -44,20 +37,9 @@ if LOG_LEVELS[PKI_LOGLEVEL]:
 
 logger.addHandler(l_hdlr)
 
-##---------------------------------##
-## Interface setup
-##---------------------------------##
 
-## Disable delete_selected
+# Disable delete_selected
 admin.site.disable_action("delete_selected")
-
-
-# class MakePublicCertificateAuthority(admin.ModelAdmin):
-#
-#    fields = ['public']
-#    list_display       = ('common_name', 'public')
-#
-# admin.site.register(CertificateAuthority, MakePublicCertificateAuthority)
 
 
 class CertificateBaseAdmin(admin.ModelAdmin):
@@ -83,10 +65,7 @@ class CertificateBaseAdmin(admin.ModelAdmin):
         obj.save()
 
     def refresh_metadata(self, request):
-        """Rebuild PKI metadate.
-
-            Renders openssl.conf template and cleans PKI_DIR.
-            """
+        """Rebuild PKI metadate. Renders openssl.conf template and cleans PKI_DIR."""
 
         ca_objects = list(CertificateAuthority.objects.all())
         refresh_pki_metadata(ca_objects)
@@ -102,7 +81,7 @@ class CertificateBaseAdmin(admin.ModelAdmin):
         return my_urls + urls
 
 
-class Certificate_Authority_Admin(CertificateBaseAdmin):
+class CertificateAuthorityAdmin(CertificateBaseAdmin):
     """CertificateAuthority admin definition"""
 
     form = CertificateAuthorityForm
@@ -110,50 +89,51 @@ class Certificate_Authority_Admin(CertificateBaseAdmin):
         "id",
         "common_name",
         "public",
-        "Serial_align_right",
-        "Valid_center",
-        "Chain_link",
-        "Tree_link",
-        "Parent_link",
-        "Expiry_date",
-        "Description",
-        "Creation_date",
-        "Revocation_date",
-        "Child_certs",
+        "serial_align_right",
+        "valid_center",
+        "chain_link",
+        "tree_link",
+        "parent_link",
+        "expiry_date_show",
+        "desc",
+        "creation_date",
+        "revocation_date",
+        "child_certs",
         "download_link_zip",
         "download_link_crt",
         "download_link_crl",
-        "Email_link",
+        "email_link",
     )
     list_display_links = ("common_name",)
     list_filter = ("parent", "active", "extension", "public")
     radio_fields = {"action": admin.VERTICAL}
     search_fields = ["name", "common_name", "description"]
     date_hierarchy = "created"
+
     readonly_fields = (
-        "Expiry_date",
-        "Creation_date",
-        "Revocation_date",
+        "expiry_date_show",
+        "creation_date",
+        "revocation_date",
         "serial",
-        "Chain",
-        "Certificate_Dump",
-        "CA_Clock",
-        "State",
+        "chain",
+        "certificate_dump",
+        "ca_clock",
+        "status",
     )
     fieldsets = (
         ("Define action", {"fields": ("action",),},),
         ("Documentation", {"fields": ("description",), "classes": ["wide",],},),
-        ("Certificate Dump", {"fields": ("Certificate_Dump",), "classes": ["collapse", "wide",],},),
+        ("Certificate Dump", {"fields": ("certificate_dump",), "classes": ["collapse", "wide",],},),
         (
             "Certificate",
             {
                 "fields": (
-                    "State",
                     "common_name",
                     "name",
-                    "country",
+                    "status",
                     "public",
                     "state",
+                    "country",
                     "locality",
                     "organization",
                     "OU",
@@ -164,9 +144,9 @@ class Certificate_Authority_Admin(CertificateBaseAdmin):
                     "passphrase",
                     "passphrase_verify",
                     "serial",
-                    "Expiry_date",
-                    "Creation_date",
-                    "Revocation_date",
+                    "expiry_date_show",
+                    "creation_date",
+                    "revocation_date",
                 ),
                 "classes": ["wide",],
             },
@@ -175,17 +155,17 @@ class Certificate_Authority_Admin(CertificateBaseAdmin):
         (
             "Certificate signing",
             {
-                "fields": ("CA_Clock", "Chain", "parent", "parent_passphrase", "crl_dpoints", "policy",),
+                "fields": ("ca_clock", "chain", "parent", "parent_passphrase", "crl_dpoints", "policy",),
                 "classes": ["wide",],
             },
         ),
     )
 
     def delete_view(self, request, object_id, extra_context=None):
-        return admin_delete(request, self.model._meta.module_name, object_id)
+        return admin_delete(request, self.model._meta.model_name, object_id)
 
     def history_view(self, request, object_id, extra_context=None):
-        return admin_history(request, self.model._meta.module_name, object_id)
+        return admin_history(request, self.model._meta.model_name, object_id)
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         """Filter foreign key parent field.
@@ -199,20 +179,20 @@ class Certificate_Authority_Admin(CertificateBaseAdmin):
             ).exclude(extension__basic_constraints__contains="pathlen:0")
             return db_field.formfield(**kwargs)
         elif db_field.name == "extension":
-            kwargs["queryset"] = x509Extension.objects.filter(
+            kwargs["queryset"] = X509Extension.objects.filter(
                 basic_constraints__contains="CA:TRUE", key_usage__name__contains="keyCertSign"
             )
             print(kwargs["queryset"])
             print(db_field.formfield(**kwargs))
             return db_field.formfield(**kwargs)
 
-        return super(Certificate_Authority_Admin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+        return super(CertificateAuthorityAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 
-admin.site.register(CertificateAuthority, Certificate_Authority_Admin)
+admin.site.register(CertificateAuthority, CertificateAuthorityAdmin)
 
 
-class Certificate_Admin(CertificateBaseAdmin):
+class CertificateAdmin(CertificateBaseAdmin):
     """CertificateAuthority admin definition"""
 
     form = CertificateForm
@@ -221,17 +201,17 @@ class Certificate_Admin(CertificateBaseAdmin):
         "common_name",
         "serial",
         "active",
-        "Chain_link",
+        "chain_link",
         "parent",
-        "Expiry_date",
-        "Description",
+        "expiry_date_show",
+        "desc",
         "created",
         "revoked",
         "download_link_zip",
         "download_link_crt",
         "download_link_ovpn",
         "download_link_p12",
-        "Email_link",
+        "email_link",
     )
     list_display_links = ("common_name",)
     radio_fields = {"action": admin.VERTICAL}
@@ -239,24 +219,25 @@ class Certificate_Admin(CertificateBaseAdmin):
     search_fields = ["name", "description"]
     date_hierarchy = "created"
     readonly_fields = (
-        "Expiry_date",
-        "Creation_date",
-        "Revocation_date",
+        "expiry_date_show",
+        "creation_date",
+        "revocation_date",
         "serial",
-        "Chain",
-        "Certificate_Dump",
-        "CA_Clock",
-        "State",
+        "chain",
+        "certificate_dump",
+        "ca_clock",
+        "status",
     )
+
     fieldsets = (
         ("Define action", {"fields": ("action",)}),
         ("Documentation", {"fields": ("description",), "classes": ["wide",],},),
-        ("Certificate Dump", {"fields": ("Certificate_Dump",), "classes": ["collapse", "wide",],},),
+        ("Certificate Dump", {"fields": ("certificate_dump",), "classes": ["collapse", "wide",],},),
         (
             "Certificate",
             {
                 "fields": (
-                    "State",
+                    "status",
                     "common_name",
                     "name",
                     "country",
@@ -271,9 +252,9 @@ class Certificate_Admin(CertificateBaseAdmin):
                     "passphrase",
                     "passphrase_verify",
                     "serial",
-                    "Expiry_date",
-                    "Creation_date",
-                    "Revocation_date",
+                    "expiry_date_show",
+                    "creation_date",
+                    "revocation_date",
                 ),
                 "classes": ["wide",],
             },
@@ -288,19 +269,20 @@ class Certificate_Admin(CertificateBaseAdmin):
         ),
         (
             "Certificate signing",
-            {"fields": ("CA_Clock", "Chain", "parent", "parent_passphrase", "crl_dpoints",), "classes": ["wide",],},
+            {"fields": ("ca_clock", "chain", "parent", "parent_passphrase", "crl_dpoints",), "classes": ["wide",],},
         ),
     )
 
     def save_model(self, request, obj, form, change):
         obj.user = request.user.username
-        super(Certificate_Admin, self).save_model(request, obj, form, change)
+        super(CertificateAdmin, self).save_model(request, obj, form, change)
 
     def delete_view(self, request, object_id, extra_context=None):
-        return admin_delete(request, self.model._meta.module_name, object_id)
+        return admin_delete(request, self.model._meta.model_name, object_id)
 
     def history_view(self, request, object_id, extra_context=None):
-        return admin_history(request, self.model._meta.module_name, object_id)
+
+        return admin_history(request, self.model._meta.model_name, object_id)
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         """Filter foreign key parent field.
@@ -319,7 +301,7 @@ class Certificate_Admin(CertificateBaseAdmin):
             return db_field.formfield(**kwargs)
 
         elif db_field.name == "extension":
-            kwargs["queryset"] = x509Extension.objects.filter(
+            kwargs["queryset"] = X509Extension.objects.filter(
                 Q(basic_constraints__contains="CA:FALSE")
                 | (
                     (Q(basic_constraints__contains="CA:TRUE") & Q(basic_constraints__contains="pathlen:0"))
@@ -328,16 +310,16 @@ class Certificate_Admin(CertificateBaseAdmin):
             )
             return db_field.formfield(**kwargs)
 
-        return super(Certificate_Admin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+        return super(CertificateAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 
-admin.site.register(Certificate, Certificate_Admin)
+admin.site.register(Certificate, CertificateAdmin)
 
 
-class x509Extension_Admin(CertificateBaseAdmin):
+class X509ExtensionAdmin(CertificateBaseAdmin):
     """Admin instance for x509 extensions"""
 
-    form = x509ExtensionForm
+    form = X509ExtensionForm
     list_display = (
         "id",
         "name",
@@ -384,17 +366,17 @@ class x509Extension_Admin(CertificateBaseAdmin):
             obj.save()
 
     def delete_view(self, request, object_id, extra_context=None):
-        x509 = x509Extension.objects.get(pk=object_id)
+        x509 = X509Extension.objects.get(pk=object_id)
         if x509.certificateauthority_set.all() or x509.certificate_set.all():
             logger.error('x509 extension "%s" cannot be removed because it is in use!' % x509.name)
             messages.error(request, 'x509 extension "%s" cannot be removed because it is in use!' % x509.name)
             return HttpResponseRedirect("../../")
         else:
-            return super(x509Extension_Admin, self).delete_view(request, object_id, extra_context)
+            return super(X509ExtensionAdmin, self).delete_view(request, object_id, extra_context)
 
     def response_change(self, request, obj):
         messages.warning(request, "You cannot modify x509 extensions!")
         return HttpResponseRedirect("../")
 
 
-admin.site.register(x509Extension, x509Extension_Admin)
+admin.site.register(X509Extension, X509ExtensionAdmin)
