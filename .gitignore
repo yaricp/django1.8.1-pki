@@ -16,3 +16,4 @@ venv*
 pki/PKI
 static/
 .tox
+*.egg-*

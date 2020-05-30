@@ -32,8 +32,11 @@ Insert 'pki' inside INSTALLED_APPS in your django project.
     $ python manage.py loaddata eku_and_ku
     
 After than needs to create folder for center of certificates.
+
 Go to https://<yourserver>:8000/admin/pki and push button "Refresh Metadata"
+
 Bingo! Your PKI center ready!
+
 You can manage your certificates in https://<yourserver>:8000/admin/pki
 
 ## Author

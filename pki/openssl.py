@@ -40,7 +40,7 @@ def refresh_pki_metadata(ca_list):
     try:
         # create base PKI directory if necessary
         if not os.path.exists(PKI_DIR):
-            os.mkdir(PKI_DIR, 0o700)
+            os.mkdir(PKI_DIR, 0o755)
             logger.info("Creating base PKI directory %s" % PKI_DIR)
 
         # list of old CA directories for possible purging

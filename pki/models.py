@@ -940,7 +940,7 @@ class CertificateAuthority(CertificateBase):
 
         super(CertificateAuthority, self).save(*args, **kwargs)
 
-        self.Update_Changelog(obj=self, user=c_user, action=c_action, changes=c_list)
+        self.update_changelog(obj=self, user=c_user, action=c_action, changes=c_list)
 
     def delete(self, passphrase, *args, **kwargs):
         """Delete the CertificateAuthority object"""
@@ -1271,7 +1271,7 @@ class Certificate(CertificateBase):
         self.parent_passphrase = None
         super(Certificate, self).save(*args, **kwargs)
 
-        self.Update_Changelog(obj=self, user=c_user, action=c_action, changes=c_list)
+        self.update_changelog(obj=self, user=c_user, action=c_action, changes=c_list)
 
     def delete(self, passphrase, *args, **kwargs):
         """Delete the Certificate object"""
