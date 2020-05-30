@@ -21,7 +21,7 @@ from .helper import (
     generate_temp_file,
     get_full_path_file,
 )
-from .models import Certificate, CertificateAuthority
+from .models import Certificate, CertificateAuthority, X509Extension
 from .openssl import refresh_pki_metadata
 from .settings import PKI_ENABLE_EMAIL, PKI_ENABLE_GRAPHVIZ, PKI_LOG, STATIC_URL
 
@@ -296,19 +296,26 @@ def admin_history(request, model, id):
     ct = ContentType.objects.get(model=model)
     model_obj = ct.model_class()
     obj = model_obj.objects.get(pk=id)
+    if model == 'certificate':
+        opts = Certificate._meta
+    elif model == 'certificateauthority':
+        opts = CertificateAuthority._meta
+    elif model == 'x509Extension':
+        opts = X509Extension._meta
 
     changelogs = PkiChangelog.objects.filter(model_id=ct.pk).filter(object_id=id)
-
+    print( model_obj._meta.app_label)
     return render(
+        request,
         "admin/pki/object_changelogs.html",
         {
             "changelogs": changelogs,
+            "opts": opts,
             "title": "Change history: %s" % obj.common_name,
             "app_label": model_obj._meta.app_label,
             "object": obj,
-            "module_name": model_obj._meta.verbose_name_plural,
+            "model_name": model,
         },
-        RequestContext(request),
     )
 
 
