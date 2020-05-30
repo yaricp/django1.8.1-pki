@@ -189,7 +189,7 @@ def pki_chain(request, model, id):
 
     try:
         if os.path.exists(png):
-            f = open(png)
+            f = open(png,'rb')
             x = f.read()
             f.close()
             os.remove(png)
@@ -219,7 +219,7 @@ def pki_tree(request, id):
 
     try:
         if os.path.exists(png):
-            f = open(png)
+            f = open(png,'rb')
             x = f.read()
             f.close()
 

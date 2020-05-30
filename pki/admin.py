@@ -326,7 +326,7 @@ class X509ExtensionAdmin(CertificateBaseAdmin):
         "key_usage_csv",
         "ext_key_usage_csv",
         "created",
-        "CrlDpoint_center",
+        "crld_point_center",
     )
     list_display_links = ("name",)
     search_fields = [

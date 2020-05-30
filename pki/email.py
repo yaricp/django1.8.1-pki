@@ -26,12 +26,13 @@ def send_certificate_data(obj, request):
 
     # Check that email flag is set in the DB
     if obj.email:
-        zip_f = build_zip_for_object(obj, request)
+        zip_f = build_zip_for_object(obj)
 
         # Read ZIP content and remove it
         try:
             if os.path.exists(zip_f):
-                f = open(zip_f)
+                print(zip_f)
+                f = open(zip_f,'rb')
                 x = f.read()
                 f.close()
 
