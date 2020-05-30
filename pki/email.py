@@ -32,7 +32,7 @@ def send_certificate_data(obj, request):
         try:
             if os.path.exists(zip_f):
                 print(zip_f)
-                f = open(zip_f,'rb')
+                f = open(zip_f, "rb")
                 x = f.read()
                 f.close()
 

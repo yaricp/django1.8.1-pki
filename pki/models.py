@@ -1328,8 +1328,13 @@ class X509Extension(models.Model):
     )
     description = models.CharField(max_length=255)
     created = models.DateTimeField(auto_now_add=True)
-    basic_constraints = models.CharField(max_length=255, choices=BASIC_CONSTRAINTS, verbose_name="basicConstraints")
-    basic_constraints_critical = models.BooleanField(default=True, verbose_name="Make basicConstraints critical")
+    basic_constraints = models.CharField(
+        max_length=255,
+        choices=BASIC_CONSTRAINTS,
+        verbose_name="basicConstraints")
+    basic_constraints_critical = models.BooleanField(
+        default=True,
+        verbose_name="Make basicConstraints critical")
     key_usage = models.ManyToManyField(
         "KeyUsage",
         verbose_name="keyUsage",
@@ -1337,7 +1342,9 @@ class X509Extension(models.Model):
                     CA: keyCertSign, cRLsign<br />\
                     Cert: digitalSignature, nonRedupiation, keyEncipherment<br />",
     )
-    key_usage_critical = models.BooleanField(verbose_name="Make keyUsage critical")
+    key_usage_critical = models.BooleanField(
+        verbose_name="Make keyUsage critical"
+    )
     extended_key_usage = models.ManyToManyField(
         "ExtendedKeyUsage",
         blank=True,

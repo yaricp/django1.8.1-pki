@@ -18,11 +18,9 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/yaricp/django1.8.1-pki/tree/django3",
-    package_dir={'pki': 'pki'},
+    include_package_data = True,
     packages=['pki'],
-    install_requires=[
-        'pygraphviz'
-    ],
+    package_dir={'pki':'pki'},
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",

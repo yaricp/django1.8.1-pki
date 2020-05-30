@@ -3,7 +3,6 @@
 *.komodoproject
 dist/
 build/
-MANIFEST
 docs/_build/
 venv/
 venv3/
