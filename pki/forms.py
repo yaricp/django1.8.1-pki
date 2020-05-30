@@ -3,10 +3,10 @@ from hashlib import md5 as md5
 
 from django import forms
 from django.forms.utils import ErrorList
-from django.shortcuts import get_object_or_404
 from django.http import Http404
+from django.shortcuts import get_object_or_404
 
-from .models import CertificateAuthority, Certificate, X509Extension
+from .models import Certificate, CertificateAuthority, X509Extension
 from .settings import PKI_CA_NAME_BLACKLIST, PKI_DIR
 
 

@@ -7,6 +7,7 @@ from .settings import PKI_ENABLE_EMAIL
 if PKI_ENABLE_EMAIL is True:
     try:
         from django.core.mail import EmailMessage
+
         # import zipfile
     except ImportError as e:
         raise Exception(

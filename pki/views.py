@@ -32,7 +32,7 @@ def home_page(request):
     certs = CertificateAuthority.objects.filter(public=True, active=True)
     personal_certs_all = Certificate.objects.filter(user=request.user.username)
     personal_certs = [c for c in personal_certs_all if not c.is_server_side_cert]
-    return render(request, "home.html", {"certs": certs, "personal_certs": personal_certs, })
+    return render(request, "home.html", {"certs": certs, "personal_certs": personal_certs,})
 
 
 def pki_download(request, model, id, ext):
@@ -281,11 +281,11 @@ def admin_history(request, model, id):
     ct = ContentType.objects.get(model=model)
     model_obj = ct.model_class()
     obj = model_obj.objects.get(pk=id)
-    if model == 'certificate':
+    if model == "certificate":
         opts = Certificate._meta
-    elif model == 'certificateauthority':
+    elif model == "certificateauthority":
         opts = CertificateAuthority._meta
-    elif model == 'x509Extension':
+    elif model == "x509Extension":
         opts = X509Extension._meta
 
     changelogs = PkiChangelog.objects.filter(model_id=ct.pk).filter(object_id=id)

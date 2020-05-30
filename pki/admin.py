@@ -229,9 +229,9 @@ class CertificateAdmin(CertificateBaseAdmin):
     )
 
     fieldsets = (
-        ("Define action", {"fields": ("action", )}),
-        ("Documentation", {"fields": ("description", ), "classes": ["wide", ], }, ),
-        ("Certificate Dump", {"fields": ("certificate_dump", ), "classes": ["collapse", "wide", ], }, ),
+        ("Define action", {"fields": ("action",)}),
+        ("Documentation", {"fields": ("description",), "classes": ["wide",],},),
+        ("Certificate Dump", {"fields": ("certificate_dump",), "classes": ["collapse", "wide",],},),
         (
             "Certificate",
             {
@@ -255,20 +255,20 @@ class CertificateAdmin(CertificateBaseAdmin):
                     "creation_date",
                     "revocation_date",
                 ),
-                "classes": ["wide", ],
+                "classes": ["wide",],
             },
         ),
-        ("Multi-domain /  ectAltName", {"fields": ("subjaltname", ), "classes": ["wide", ], }, ),
+        ("Multi-domain /  ectAltName", {"fields": ("subjaltname",), "classes": ["wide",],},),
         (
             "Encoding options",
             {
-                "fields": ("der_encoded", "pkcs12_encoded", "pkcs12_passphrase", "pkcs12_passphrase_verify", ),
-                "classes": ["wide", ],
+                "fields": ("der_encoded", "pkcs12_encoded", "pkcs12_passphrase", "pkcs12_passphrase_verify",),
+                "classes": ["wide",],
             },
         ),
         (
             "Certificate signing",
-            {"fields": ("ca_clock", "chain", "parent", "parent_passphrase", "crl_dpoints", ), "classes": ["wide", ], },
+            {"fields": ("ca_clock", "chain", "parent", "parent_passphrase", "crl_dpoints",), "classes": ["wide",],},
         ),
     )
 
